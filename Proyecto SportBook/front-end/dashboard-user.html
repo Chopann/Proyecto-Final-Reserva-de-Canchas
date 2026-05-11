@@ -1,0 +1,154 @@
+<!-- ============================= -->
+<!-- dashboard-user.html -->
+<!-- ============================= -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportReserve | Panel de Usuario</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">SportReserve</a>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menuUsuario">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menuUsuario">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard-user.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="canchas.html">Canchas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reservar.html">Reservar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="mis-reservas.html">Mis Reservas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-warning ms-2" href="login.html">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BIENVENIDA -->
+    <section class="container py-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-banner shadow rounded p-4 text-white">
+                    <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
+                    <p>Gestiona tus reservas deportivas de forma rápida y sencilla.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACCESOS RÁPIDOS -->
+    <section class="container pb-5">
+        <div class="row g-4">
+
+            <!-- VER CANCHAS -->
+            <div class="col-md-4">
+                <div class="card dashboard-card shadow h-100 text-center p-4">
+                    <h3>Ver Canchas</h3>
+                    <p>Consulta disponibilidad, tipos y precios.</p>
+                    <a href="canchas.html" class="btn btn-success">Explorar</a>
+                </div>
+            </div>
+
+            <!-- RESERVAR -->
+            <div class="col-md-4">
+                <div class="card dashboard-card shadow h-100 text-center p-4">
+                    <h3>Nueva Reserva</h3>
+                    <p>Reserva tu cancha favorita fácilmente.</p>
+                    <a href="reservar.html" class="btn btn-success">Reservar</a>
+                </div>
+            </div>
+
+            <!-- MIS RESERVAS -->
+            <div class="col-md-4">
+                <div class="card dashboard-card shadow h-100 text-center p-4">
+                    <h3>Mis Reservas</h3>
+                    <p>Consulta, modifica o cancela reservas.</p>
+                    <a href="mis-reservas.html" class="btn btn-success">Consultar</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- RESUMEN -->
+    <section class="container pb-5">
+        <h2 class="mb-4">Resumen General</h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card text-center shadow p-4">
+                    <h4>Reservas Activas</h4>
+                    <h2 id="reservasActivas">-</h2>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-center shadow p-4">
+                    <h4>Pagos Pendientes</h4>
+                    <h2 id="pagosPendientes">-</h2>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-center shadow p-4">
+                    <h4>Total Invertido</h4>
+                    <h2 id="totalInvertido">-</h2>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ÚLTIMAS RESERVAS -->
+    <section class="container pb-5">
+        <h2 class="mb-4">Últimas Reservas</h2>
+
+        <div class="table-responsive shadow rounded">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-success">
+                    <tr>
+                        <th>Cancha</th>
+                        <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Estado Pago</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUltimasReservas">
+                    <tr><td colspan="5" class="text-center">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white text-center p-4">
+        <p class="mb-0">© 2026 SportReserve | Panel de Usuario</p>
+    </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
