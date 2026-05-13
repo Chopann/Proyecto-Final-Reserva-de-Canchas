@@ -1,0 +1,28 @@
+# ==========================================
+# SportBook — .gitignore
+# ==========================================
+
+# Maven
+target/
+*.class
+*.jar
+*.war
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# IntelliJ
+.idea/
+*.iml
+
+# Logs
+*.log
+logs/
+
+# Variables de entorno sensibles
+application-local.properties
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
