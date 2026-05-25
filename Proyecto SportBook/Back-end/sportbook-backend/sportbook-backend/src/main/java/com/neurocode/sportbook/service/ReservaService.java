@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class ReservaService {
 
         // 4. Calcular monto total: precio_hora × horas_reservadas
         long minutos = Duration.between(request.getHoraInicio(), request.getHoraFin()).toMinutes();
-        BigDecimal horas = BigDecimal.valueOf(minutos).divide(BigDecimal.valueOf(60));
+        BigDecimal horas = BigDecimal.valueOf(minutos).divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
         BigDecimal montoTotal = cancha.getPrecioHora().multiply(horas);
 
         // 5. Guardar reserva
@@ -111,7 +112,7 @@ public class ReservaService {
                 .orElseThrow(() -> new IllegalArgumentException("Cancha no encontrada."));
 
         long minutos = Duration.between(request.getHoraInicio(), request.getHoraFin()).toMinutes();
-        BigDecimal horas = BigDecimal.valueOf(minutos).divide(BigDecimal.valueOf(60));
+        BigDecimal horas = BigDecimal.valueOf(minutos).divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
         BigDecimal montoTotal = cancha.getPrecioHora().multiply(horas);
 
         reserva.setCancha(cancha);

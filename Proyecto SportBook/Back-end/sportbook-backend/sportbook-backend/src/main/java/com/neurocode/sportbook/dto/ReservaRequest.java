@@ -8,7 +8,7 @@ import java.time.LocalTime;
 public class ReservaRequest {
     @NotNull
     private Integer idCancha;
-    @NotNull @Future
+    @NotNull @FutureOrPresent
     private LocalDate fecha;
     @NotNull
     private LocalTime horaInicio;
