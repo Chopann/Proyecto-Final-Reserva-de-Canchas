@@ -81,8 +81,13 @@
 
     <!-- BOTÓN NUEVA CANCHA -->
     <section class="container-fluid px-4 pb-3">
-        <button class="btn btn-success">
+        <button
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#modalNuevaCancha">
+
             + Registrar Nueva Cancha
+
         </button>
     </section>
 
@@ -104,7 +109,11 @@
                 </thead>
 
                 <tbody id="tablaGestionCanchas">
-                    <tr><td colspan="6" class="text-center">Cargando...</td></tr>
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            Cargando...
+                        </td>
+                    </tr>
                 </tbody>
 
             </table>
@@ -157,9 +166,109 @@
         </div>
     </section>
 
+    <!-- MODAL NUEVA CANCHA -->
+    <div class="modal fade" id="modalNuevaCancha" tabindex="-1">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <form id="formNuevaCancha">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Registrar Nueva Cancha
+                        </h5>
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Nombre de la cancha
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nombreCancha"
+                                class="form-control"
+                                placeholder="Ej: Cancha Norte"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Tipo de superficie
+                            </label>
+
+                            <select
+                                id="tipoSuperficie"
+                                class="form-select"
+                                required>
+
+                                <option value="">Seleccione</option>
+                                <option>Sintética</option>
+                                <option>Cemento</option>
+                                <option>Grass</option>
+
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Precio por hora
+                            </label>
+
+                            <input
+                                type="number"
+                                id="precioHora"
+                                class="form-control"
+                                placeholder="Ej: 50000"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                            Cancelar
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success">
+
+                            Guardar Cancha
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <!-- FOOTER -->
     <footer class="bg-dark text-white text-center p-4">
-        <p class="mb-0">© 2026 SportReserve | Administración de Canchas</p>
+        <p class="mb-0">
+            © 2026 SportReserve | Administración de Canchas
+        </p>
     </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

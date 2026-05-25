@@ -589,71 +589,250 @@ if (btnFiltrarReservas) {
 /* GESTIÓN CANCHAS — Admin               */
 /* ===================================== */
 
+
+
 if (document.getElementById("tablaGestionCanchas")) {
+
     verificarAdmin();
+
     cargarGestionCanchas();
+
 }
 
 async function cargarGestionCanchas() {
+
     const tbody = document.getElementById("tablaGestionCanchas");
+
     if (!tbody) return;
 
     try {
-        const res  = await fetch(`${API_URL}/canchas`, { headers: headersAuth() });
+
+        const res = await fetch(`${API_URL}/canchas`, {
+            headers: headersAuth()
+        });
+
         const json = await res.json();
 
         if (res.ok && json.success) {
+
             const canchas = json.data;
 
-            setText("totalCanchas",      canchas.length);
-            setText("canchasDisp",       canchas.filter(c => c.estado === "Disponible").length);
-            setText("canchasMant",       canchas.filter(c => c.estado === "Mantenimiento").length);
+            console.log("Canchas:", canchas);
 
-            tbody.innerHTML = canchas.map(c => `
-                <tr>
-                    <td>${c.idCancha}</td>
-                    <td>${c.nombreCancha}</td>
-                    <td>${c.tipoSuperficie}</td>
-                    <td>$${(c.precioHora || 0).toLocaleString("es-CO")}</td>
-                    <td>${badgeEstado(c.estado)}</td>
-                    <td>
-                        ${c.estado === "Disponible"
-                            ? `<button class="btn btn-sm btn-warning"
-                                onclick="cambiarEstadoCancha(${c.idCancha}, 'Mantenimiento')">
-                                Mantenimiento</button>`
-                            : `<button class="btn btn-sm btn-success"
-                                onclick="cambiarEstadoCancha(${c.idCancha}, 'Disponible')">
-                                Reactivar</button>`
-                        }
-                    </td>
-                </tr>`).join("");
+            // =========================
+            // MÉTRICAS
+            // =========================
+
+            setText("totalCanchas", canchas.length);
+
+            setText(
+                "canchasDisp",
+                canchas.filter(c =>
+                    c.estado?.trim().toLowerCase() === "disponible"
+                ).length
+            );
+
+            setText(
+                "canchasMant",
+                canchas.filter(c =>
+                    c.estado?.trim().toLowerCase() === "mantenimiento"
+                ).length
+            );
+
+            // =========================
+            // TABLA
+            // =========================
+
+            if (canchas.length === 0) {
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No hay canchas registradas.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+            tbody.innerHTML = canchas.map(c => {
+
+                const estadoNormalizado =
+                    c.estado?.trim().toLowerCase();
+
+                return `
+
+                    <tr>
+
+                        <td>${c.idCancha}</td>
+
+                        <td>
+                            <strong>${c.nombreCancha}</strong>
+                        </td>
+
+                        <td>${c.tipoSuperficie}</td>
+
+                        <td>
+                            $${(c.precioHora || 0).toLocaleString("es-CO")}
+                        </td>
+
+                        <td>
+                            ${badgeEstado(c.estado)}
+                        </td>
+
+                        <td>
+                            <span class="badge bg-info">
+                                Activa
+                            </span>
+                        </td>
+
+                        <td>
+
+                            ${estadoNormalizado === "disponible"
+
+                                ? `
+
+                                    <button
+                                        class="btn btn-sm btn-warning"
+
+                                        onclick="cambiarEstadoCancha(
+                                            ${c.idCancha},
+                                            'Mantenimiento'
+                                        )">
+
+                                        Mantenimiento
+
+                                    </button>
+
+                                `
+
+                                : `
+
+                                    <button
+                                        class="btn btn-sm btn-success"
+
+                                        onclick="cambiarEstadoCancha(
+                                            ${c.idCancha},
+                                            'Disponible'
+                                        )">
+
+                                        Reactivar
+
+                                    </button>
+
+                                `
+                            }
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }).join("");
+
         } else {
-            throw new Error(json.message || "Error cargando canchas");
+
+            throw new Error(
+                json.message || "Error cargando canchas"
+            );
+
         }
+
     } catch (error) {
-        console.error("Error cargando gestión canchas:", error);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger"><strong>Error cargando canchas:</strong> ${error.message}</td></tr>`;
+
+        console.error(
+            "Error cargando gestión canchas:",
+            error
+        );
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="7"
+                    class="text-center text-danger">
+
+                    <strong>
+                        Error cargando canchas:
+                    </strong>
+
+                    ${error.message}
+
+                </td>
+
+            </tr>
+
+        `;
+
     }
+
 }
 
 async function cambiarEstadoCancha(id, nuevoEstado) {
+
+    const confirmar = confirm(
+        `¿Desea cambiar el estado de la cancha a "${nuevoEstado}"?`
+    );
+
+    if (!confirmar) return;
+
     try {
-        const res = await fetch(`${API_URL}/canchas/${id}/estado`, {
-            method:  "PATCH",
-            headers: headersAuth(),
-            body:    JSON.stringify({ estado: nuevoEstado })
-        });
+
+        const res = await fetch(
+            `${API_URL}/canchas/${id}/estado`,
+            {
+                method: "PATCH",
+
+                headers: headersAuth(),
+
+                body: JSON.stringify({
+                    estado: nuevoEstado
+                })
+            }
+        );
+
         const json = await res.json();
 
+        console.log("Respuesta PATCH:", json);
+
         if (res.ok && json.success) {
-            mostrarAlerta(`Cancha actualizada a: ${nuevoEstado}`, "success");
-            cargarGestionCanchas();
+
+            mostrarAlerta(
+                `Cancha actualizada a: ${nuevoEstado}`,
+                "success"
+            );
+
+            // Esperar un poco antes de recargar
+            setTimeout(() => {
+                cargarGestionCanchas();
+            }, 300);
+
         } else {
-            mostrarAlerta(json.message || "Error al cambiar estado.", "danger");
+
+            mostrarAlerta(
+                json.message || "Error cambiando estado.",
+                "danger"
+            );
+
         }
+
     } catch (error) {
-        mostrarAlerta("Error de conexión.", "danger");
+
+        console.error(
+            "Error cambiando estado:",
+            error
+        );
+
+        mostrarAlerta(
+            "Error de conexión con el servidor.",
+            "danger"
+        );
+
     }
+
 }
 
 /* ===================================== */
@@ -825,3 +1004,99 @@ function badgeEstado(estado) {
         ? `<span class="badge bg-success">Disponible</span>`
         : `<span class="badge bg-danger">Mantenimiento</span>`;
 }
+
+/* ===================================== */
+/* REGISTRAR NUEVA CANCHA                */
+/* ===================================== */
+
+const formNuevaCancha = document.getElementById("formNuevaCancha");
+
+if (formNuevaCancha) {
+
+    formNuevaCancha.addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        const nombreCancha   = document.getElementById("nombreCancha").value.trim();
+        const tipoSuperficie = document.getElementById("tipoSuperficie").value;
+        const precioHora     = parseFloat(
+            document.getElementById("precioHora").value
+        );
+
+        // Validaciones
+        if (!nombreCancha || !tipoSuperficie || !precioHora) {
+
+            alert("Todos los campos son obligatorios.");
+            return;
+
+        }
+
+        if (precioHora <= 0) {
+
+            alert("El precio debe ser mayor a cero.");
+            return;
+
+        }
+
+        try {
+
+            const res = await fetch(`${API_URL}/canchas`, {
+
+                method: "POST",
+
+                headers: headersAuth(),
+
+                body: JSON.stringify({
+
+                    nombreCancha,
+                    tipoSuperficie,
+                    precioHora,
+                    estado: "Disponible"
+
+                })
+
+            });
+
+            const json = await res.json();
+
+            if (res.ok && json.success) {
+
+                alert("Cancha registrada exitosamente.");
+
+                // Limpiar formulario
+                formNuevaCancha.reset();
+
+                // Cerrar modal
+                const modalElement = document.getElementById("modalNuevaCancha");
+
+                const modal =
+                    bootstrap.Modal.getInstance(modalElement);
+
+                if (modal) {
+                    modal.hide();
+                }
+
+                // Recargar tabla
+                cargarGestionCanchas();
+
+            } else {
+
+                alert(json.message || "Error registrando cancha.");
+
+            }
+
+        } catch (error) {
+
+            console.error("Error creando cancha:", error);
+
+            alert("Error de conexión con el servidor.");
+
+        }
+
+    });
+
+}
+
+cargarGestionCanchas
+
+
