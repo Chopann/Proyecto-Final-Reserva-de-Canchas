@@ -5,6 +5,7 @@ import com.neurocode.sportbook.service.CanchaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +48,9 @@ public class CanchaController {
         return ResponseEntity.ok(ApiResponse.ok("Cancha actualizada", canchaService.actualizar(id, request)));
     }
 
-    /** PATCH /api/canchas/{id}/estado — cambia estado: Disponible / Mantenimiento */
+    /**
+     * PATCH /api/canchas/{id}/estado — cambia estado: Disponible / Mantenimiento
+     */
     @PatchMapping("/{id}/estado")
     public ResponseEntity<ApiResponse<Void>> cambiarEstado(
             @PathVariable Integer id,
@@ -60,10 +63,11 @@ public class CanchaController {
         return ResponseEntity.ok(ApiResponse.ok("Estado actualizado a: " + nuevoEstado));
     }
 
-    /** DELETE /api/canchas/{id} — solo Administrador */
+    /** DELETE /api/canchas/{id} — Solo accesible por ADMIN */
+    @PreAuthorize("hasRole('ADMIN')") // Esta anotación bloquea el acceso a otros roles
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-        canchaService.eliminar(id);
+        canchaService.eliminar_cancha(id);
         return ResponseEntity.ok(ApiResponse.ok("Cancha eliminada"));
     }
 }

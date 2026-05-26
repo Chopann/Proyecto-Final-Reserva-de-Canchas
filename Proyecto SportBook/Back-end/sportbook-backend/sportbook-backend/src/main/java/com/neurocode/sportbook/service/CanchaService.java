@@ -62,6 +62,11 @@ public class CanchaService {
 
     public void cambiarEstado(Integer id, String nuevoEstado) {
         Cancha cancha = buscarOError(id);
+
+        // Mejora: Si pasamos a mantenimiento, podriamos imprimir un log especial
+        if ("Mantenimiento".equalsIgnoreCase(nuevoEstado)) {
+            System.out.println("AERTA: La cancha " + cancha.getNombreCancha() + "ha salido de servicio.");
+        }
         cancha.setEstado(nuevoEstado);
         canchaRepository.save(cancha);
     }
@@ -79,12 +84,41 @@ public class CanchaService {
     }
 
     private CanchaResponse toResponse(Cancha c) {
+        String nombre = c.getNombreCancha().toLowerCase();
+        String query;
+
+        // Usamos etiquetas en inglés (funcionan mejor) y variamos según el deporte
+        if (nombre.contains("tenis") || nombre.contains("tennis")) {
+            query = "tennis";
+        } else if (nombre.contains("basket") || nombre.contains("baloncesto")) {
+            query = "basketball";
+        } else if (nombre.contains("futbol") || nombre.contains("fútbol") || nombre.contains("soccer")) {
+            query = "soccer";
+        } else {
+            query = "stadium";
+        }
+
+        // EXPLICACIÓN DEL CAMBIO:
+        // Añadimos el ID al final de la ruta para que LoremFlickr lo vea como URLs
+        // distintas
+        // Formato: /640/480/deporte?lock=ID
+        String fotoUrl = "https://loremflickr.com/640/480/" + query + "?lock=" + c.getIdCancha();
+
         return CanchaResponse.builder()
                 .idCancha(c.getIdCancha())
                 .nombreCancha(c.getNombreCancha())
                 .tipoSuperficie(c.getTipoSuperficie())
                 .precioHora(c.getPrecioHora())
                 .estado(c.getEstado())
+                .fotoUrl(fotoUrl)
                 .build();
+    }
+
+    public void eliminar_cancha(Integer id) {
+        // Primero verificamos si existe para lanzar el error antes de intentar borrar
+        if (!canchaRepository.existsById(id)) {
+            throw new IllegalArgumentException("La cancha con ID " + id + " no existe.");
+        }
+        canchaRepository.deleteById(id);
     }
 }
