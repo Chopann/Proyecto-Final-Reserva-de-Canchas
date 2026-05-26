@@ -17,6 +17,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
     List<Reserva> findByCancha_IdCancha(Integer idCancha);
 
+    void deleteByCancha_IdCancha(Integer idCancha);
+
     List<Reserva> findByEstadoPago(String estadoPago);
 
     List<Reserva> findByFecha(LocalDate fecha);

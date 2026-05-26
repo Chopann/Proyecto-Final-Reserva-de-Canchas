@@ -63,11 +63,9 @@ public class CanchaController {
         return ResponseEntity.ok(ApiResponse.ok("Estado actualizado a: " + nuevoEstado));
     }
 
-    /** DELETE /api/canchas/{id} — Solo accesible por ADMIN */
-    @PreAuthorize("hasRole('ADMIN')") // Esta anotación bloquea el acceso a otros roles
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Integer id) {
-        canchaService.eliminar_cancha(id);
+        canchaService.eliminar(id);
         return ResponseEntity.ok(ApiResponse.ok("Cancha eliminada"));
     }
 }

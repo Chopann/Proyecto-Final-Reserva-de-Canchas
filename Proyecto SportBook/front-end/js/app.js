@@ -7,6 +7,57 @@
 const API_URL = "http://localhost:8080/api";
 
 /* ===================================== */
+/* IMÁGENES DE CANCHAS                   */
+/* ===================================== */
+
+function imagenCancha(nombreCancha, tipoSuperficie) {
+    const nombre = (nombreCancha || "").toLowerCase();
+    if (nombre.includes("fútbol #1") || nombre.includes("futbol #1"))
+        return "https://images.unsplash.com/photo-1551958219-acbc630e2914?w=400&h=220&fit=crop";
+    if (nombre.includes("fútbol #2") || nombre.includes("futbol #2"))
+        return "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&h=220&fit=crop";
+    if (nombre.includes("fútbol #3") || nombre.includes("futbol #3"))
+        return "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=220&fit=crop";
+    if (nombre.includes("fútbol") || nombre.includes("futbol"))
+        return "https://images.unsplash.com/photo-1551958219-acbc630e2914?w=400&h=220&fit=crop";
+    if (nombre.includes("tenis #2"))
+        return "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=220&fit=crop";
+    if (nombre.includes("tenis #3"))
+        return "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=400&h=220&fit=crop";
+    if (nombre.includes("tenis #4"))
+        return "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=220&fit=crop";
+    if (nombre.includes("tenis"))
+        return "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=220&fit=crop";
+    if (nombre.includes("basket #1") || nombre.includes("baloncesto #1"))
+        return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=220&fit=crop";
+    if (nombre.includes("basket #2") || nombre.includes("baloncesto #2"))
+        return "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=220&fit=crop";
+    if (nombre.includes("basket") || nombre.includes("baloncesto"))
+        return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=220&fit=crop";
+    if (nombre.includes("pádel #1") || nombre.includes("padel #1"))
+        return "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=220&fit=crop";
+    if (nombre.includes("pádel #2") || nombre.includes("padel #2"))
+        return "https://images.unsplash.com/photo-1599474924187-334a4ae5bd3c?w=400&h=220&fit=crop";
+    if (nombre.includes("pádel") || nombre.includes("padel"))
+        return "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=220&fit=crop";
+    if (nombre.includes("volei"))
+        return "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=220&fit=crop";
+    if (nombre.includes("multiuso"))
+        return "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&h=220&fit=crop";
+    const fallbacks = {
+        "Sintética": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&h=220&fit=crop",
+        "Cemento":   "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=220&fit=crop",
+        "Grass":     "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=220&fit=crop"
+    };
+    return fallbacks[tipoSuperficie] || "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&h=220&fit=crop";
+}
+
+function obtenerImagenCancha(nombreCancha, tipoSuperficie) {
+    const local = localStorage.getItem("img_" + (nombreCancha || "").toLowerCase());
+    return local || imagenCancha(nombreCancha, tipoSuperficie);
+}
+
+/* ===================================== */
 /* UTILIDADES GENERALES                  */
 /* ===================================== */
 
@@ -345,18 +396,9 @@ async function cargarCanchas(estado = null, superficie = null) {
   const contenedor = document.getElementById("listaCanchas");
   if (!contenedor) return;
 
-  // DETERMINAR SI ES VISTA DE ADMINISTRADOR
-  // Opción A: Por nombre de archivo (si tu html se llama gestion.html o admin.html)
-  const esPaginaAdmin =
-    window.location.pathname.includes("admin") ||
-    window.location.pathname.includes("gestion");
-
-  // Opción B: Por rol en localStorage (si ya tienes login)
-  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-  const esUsuarioAdmin = usuario.rol === "ADMIN";
-
-  // Decidimos si mostramos herramientas de gestión
-  const mostrarGestion = esPaginaAdmin || esUsuarioAdmin;
+  // Detectar si es admin usando sessionStorage (donde guardamos el token al login)
+  const rol = sessionStorage.getItem("rol");
+  const mostrarGestion = rol === "Administrador";
 
   let url = `${API_URL}/canchas`;
   const params = [];
@@ -377,24 +419,27 @@ async function cargarCanchas(estado = null, superficie = null) {
           let icono = "⚽";
           if (nombreLower.includes("tenis")) icono = "🎾";
           if (nombreLower.includes("basket")) icono = "🏀";
+          if (nombreLower.includes("pádel") || nombreLower.includes("padel")) icono = "🏓";
+          if (nombreLower.includes("volei")) icono = "🏐";
+
+          // Imagen: primero busca foto subida localmente, si no usa Unsplash
+          const imgSrc = obtenerImagenCancha(c.nombreCancha, c.tipoSuperficie);
 
           // BOTONES DINÁMICOS
           let botonesAccion = "";
 
           if (mostrarGestion) {
-            // Visual de Administrador: Botones de Editar y Eliminar
             botonesAccion = `
                         <div class="d-flex gap-2">
                             <button onclick="prepararEdicion(${c.idCancha})" class="btn btn-warning flex-grow-1 text-white">
                                 ✏️ Editar
                             </button>
-                            <button onclick="eliminarCancha(${c.idCancha})" class="btn btn-danger">
+                            <button onclick="eliminarCancha(${c.idCancha}, '${c.nombreCancha}')" class="btn btn-danger">
                                 🗑️
                             </button>
                         </div>
                     `;
           } else {
-            // Visual de Lector/Cliente: Botón de Reservar
             botonesAccion =
               c.estado === "Disponible"
                 ? `<a href="reservar.html?cancha=${c.idCancha}" class="btn btn-success w-100">Reservar</a>`
@@ -404,21 +449,18 @@ async function cargarCanchas(estado = null, superficie = null) {
           return `
                 <div class="col-md-4 mb-4">
                     <div class="card shadow h-100 border-0 bg-dark text-white">
-                        <img src="${
-                          c.fotoUrl
-                        }" class="card-img-top" style="height: 180px; object-fit: cover;">
+                        <img src="${imgSrc}"
+                             class="card-img-top"
+                             style="height: 180px; object-fit: cover;"
+                             alt="${c.nombreCancha}"
+                             onerror="this.src='https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&h=220&fit=crop'">
                         <div class="card-body d-flex flex-column">
                             <h4 class="card-title d-flex justify-content-between">
                                 ${c.nombreCancha} <span>${icono}</span>
                             </h4>
-                            <p class="mb-1 text-secondary">ID: ${c.idCancha}</p>
-                            <p class="mb-1"><strong>Superficie:</strong> ${
-                              c.tipoSuperficie
-                            }</p>
-                            <p class="mb-2"><strong>Estado:</strong> ${badgeEstado(
-                              c.estado
-                            )}</p>
-                            
+                            <p class="mb-1"><strong>Superficie:</strong> ${c.tipoSuperficie}</p>
+                            <p class="mb-1"><strong>Precio:</strong> $${(c.precioHora || 0).toLocaleString("es-CO")}/hora</p>
+                            <p class="mb-2"><strong>Estado:</strong> ${badgeEstado(c.estado)}</p>
                             <div class="mt-auto">
                                 ${botonesAccion}
                             </div>
@@ -434,55 +476,25 @@ async function cargarCanchas(estado = null, superficie = null) {
 }
 
 // FUNCIÓN PARA ELIMINAR (Asegúrate de tenerla en app.js)
-async function eliminarCancha(id) {
-  if (!confirm("¿Seguro que deseas eliminar esta cancha?")) return;
+async function eliminarCancha(id, nombre) {
+    if (!confirm(`¿Está seguro que desea eliminar "${nombre}"?\nEsta acción eliminará también sus reservas asociadas y no se puede deshacer.`)) return;
 
-  try {
-    const res = await fetch(`${API_URL}/canchas/${id}`, {
-      method: "DELETE",
-      headers: headersAuth(),
-    });
+    try {
+        const res  = await fetch(`${API_URL}/canchas/${id}`, {
+            method:  "DELETE",
+            headers: headersAuth()
+        });
+        const json = await res.json();
 
-    if (res.ok) {
-      alert("Cancha eliminada correctamente");
-      cargarCanchas(); // Refresca la vista
-    } else {
-      alert("Error al eliminar");
+        if (res.ok && json.success) {
+            mostrarAlerta(`Cancha eliminada exitosamente.`, "success");
+            cargarGestionCanchas();
+        } else {
+            mostrarAlerta(json.message || "Error al eliminar la cancha.", "danger");
+        }
+    } catch (error) {
+        mostrarAlerta("Error de conexión con el servidor.", "danger");
     }
-  } catch (e) {
-    alert("Error de conexión");
-  }
-}
-
-/**
- * Función para eliminar una cancha enviando la petición al Backend
- */
-async function eliminarCancha(id) {
-  if (
-    !confirm("¿Seguro que deseas eliminar esta cancha de forma permanente?")
-  ) {
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_URL}/canchas/${id}`, {
-      method: "DELETE",
-      headers: headersAuth(),
-    });
-
-    if (res.ok) {
-      alert("Cancha eliminada correctamente");
-      cargarCanchas(); // Recargamos la lista para actualizar la vista
-    } else {
-      const errorData = await res.json();
-      alert(
-        "Error al eliminar: " +
-          (errorData.message || "No se pudo completar la acción")
-      );
-    }
-  } catch (error) {
-    alert("Error de conexión con el servidor");
-  }
 }
 
 // Botón filtrar canchas
@@ -878,6 +890,12 @@ async function cargarGestionCanchas() {
                                 `
                             }
 
+                            <button
+                                class="btn btn-sm btn-danger mt-1"
+                                onclick="eliminarCancha(${c.idCancha}, '${c.nombreCancha}')">
+                                🗑️ Eliminar
+                            </button>
+
                         </td>
 
                     </tr>
@@ -1216,35 +1234,6 @@ if (formNuevaCancha) {
       alert("Error de conexión con el servidor.");
     }
   });
-
-  async function eliminarCancha(id) {
-    // Preguntar al usuario antes de borrar
-    const confirmar = confirm(
-      "¿Estás seguro de que deseas eliminar esta cancha? Esta acción no se puede deshacer."
-    );
-
-    if (!confirmar) return;
-
-    try {
-      const res = await fetch(`${API_URL}/canchas/${id}`, {
-        method: "DELETE",
-        headers: headersAuth(), // Importante para la seguridad si usas JWT
-      });
-
-      const json = await res.json();
-
-      if (res.ok) {
-        alert("Cancha eliminada con éxito.");
-        // Recargamos la lista para que desaparezca la tarjeta
-        cargarCanchas();
-      } else {
-        alert("Error: " + (json.message || "No se pudo eliminar la cancha."));
-      }
-    } catch (error) {
-      console.error("Error al eliminar:", error);
-      alert("Ocurrió un error en el servidor.");
-    }
-  }
 }
 
 cargarGestionCanchas;
