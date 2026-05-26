@@ -55,8 +55,12 @@ spring.datasource.password=TU_PASSWORD_AQUI
 ```
 Por tu contraseña real de PostgreSQL.
 
-### 4. Correr el backend
-Abrir terminal en la carpeta `sportbook-backend` y ejecutar:
+### 4. correr el frontend
+Abrir una terminal en la carpeta `sportbook-frontend` y ejecutar:
+"python -m http.server 5500"
+
+### 5. Correr el backend
+Abrir otra terminal en la carpeta `sportbook-backend` y ejecutar:
 ```bash
 mvn spring-boot:run
 ```
@@ -65,8 +69,8 @@ Esperar hasta ver:
 Started SportBookApplication in X seconds
 ```
 
-### 5. Abrir el frontend
-Abrir el archivo `frontend-sportbook/index.html` en el navegador.
+### 6. Abrir el frontend
+Abrir el archivo `http://localhost:5500/login.html` en el navegador.
 O usar la extensión **Live Server** de VS Code.
 
 ---

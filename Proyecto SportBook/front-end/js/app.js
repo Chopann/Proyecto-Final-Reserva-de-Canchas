@@ -52,9 +52,11 @@ function imagenCancha(nombreCancha, tipoSuperficie) {
     return fallbacks[tipoSuperficie] || "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&h=220&fit=crop";
 }
 
-function obtenerImagenCancha(nombreCancha, tipoSuperficie) {
-    const local = localStorage.getItem("img_" + (nombreCancha || "").toLowerCase());
-    return local || imagenCancha(nombreCancha, tipoSuperficie);
+function obtenerImagenCancha(nombreCancha, tipoSuperficie, imagenUrl) {
+    // Si tiene imagen guardada en el servidor, usarla
+    if (imagenUrl && imagenUrl.trim() !== "") return imagenUrl;
+    // Si no, usar imagen de Unsplash según el tipo
+    return imagenCancha(nombreCancha, tipoSuperficie);
 }
 
 /* ===================================== */
@@ -423,7 +425,7 @@ async function cargarCanchas(estado = null, superficie = null) {
           if (nombreLower.includes("volei")) icono = "🏐";
 
           // Imagen: primero busca foto subida localmente, si no usa Unsplash
-          const imgSrc = obtenerImagenCancha(c.nombreCancha, c.tipoSuperficie);
+          const imgSrc = obtenerImagenCancha(c.nombreCancha, c.tipoSuperficie, c.imagenUrl);
 
           // BOTONES DINÁMICOS
           let botonesAccion = "";
@@ -1173,67 +1175,111 @@ function badgeEstado(estado) {
 
 const formNuevaCancha = document.getElementById("formNuevaCancha");
 
+// Previsualizar imagen al seleccionarla
+const inputImagen = document.getElementById("imagenCancha");
+if (inputImagen) {
+    inputImagen.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById("previewImagen");
+                const container = document.getElementById("previewContainer");
+                if (preview && container) {
+                    preview.src = e.target.result;
+                    container.style.display = "block";
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
 if (formNuevaCancha) {
-  formNuevaCancha.addEventListener("submit", async function (e) {
-    e.preventDefault();
+    formNuevaCancha.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    const nombreCancha = document.getElementById("nombreCancha").value.trim();
-    const tipoSuperficie = document.getElementById("tipoSuperficie").value;
-    const precioHora = parseFloat(document.getElementById("precioHora").value);
+        const nombreCancha   = document.getElementById("nombreCancha").value.trim();
+        const tipoSuperficie = document.getElementById("tipoSuperficie").value;
+        const precioHora     = parseFloat(document.getElementById("precioHora").value);
+        const estado         = document.getElementById("estadoCancha")?.value || "Disponible";
+        const imagenFile     = document.getElementById("imagenCancha")?.files[0];
 
-    // Validaciones
-    if (!nombreCancha || !tipoSuperficie || !precioHora) {
-      alert("Todos los campos son obligatorios.");
-      return;
-    }
-
-    if (precioHora <= 0) {
-      alert("El precio debe ser mayor a cero.");
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_URL}/canchas`, {
-        method: "POST",
-
-        headers: headersAuth(),
-
-        body: JSON.stringify({
-          nombreCancha,
-          tipoSuperficie,
-          precioHora,
-          estado: "Disponible",
-        }),
-      });
-
-      const json = await res.json();
-
-      if (res.ok && json.success) {
-        alert("Cancha registrada exitosamente.");
-
-        // Limpiar formulario
-        formNuevaCancha.reset();
-
-        // Cerrar modal
-        const modalElement = document.getElementById("modalNuevaCancha");
-
-        const modal = bootstrap.Modal.getInstance(modalElement);
-
-        if (modal) {
-          modal.hide();
+        // Validaciones
+        if (!nombreCancha) {
+            mostrarAlerta("El nombre de la cancha es obligatorio.", "danger", "alertaModalCancha");
+            return;
+        }
+        if (!tipoSuperficie) {
+            mostrarAlerta("Seleccione un tipo de superficie.", "danger", "alertaModalCancha");
+            return;
+        }
+        if (!precioHora || precioHora <= 0) {
+            mostrarAlerta("El precio debe ser mayor a cero.", "danger", "alertaModalCancha");
+            return;
         }
 
-        // Recargar tabla
-        cargarGestionCanchas();
-      } else {
-        alert(json.message || "Error registrando cancha.");
-      }
-    } catch (error) {
-      console.error("Error creando cancha:", error);
+        // Si hay imagen, guardarla en localStorage asociada al nombre
+        if (imagenFile) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                localStorage.setItem("img_" + nombreCancha.toLowerCase(), e.target.result);
+                await enviarNuevaCancha(nombreCancha, tipoSuperficie, precioHora, estado);
+            };
+            reader.readAsDataURL(imagenFile);
+        } else {
+            await enviarNuevaCancha(nombreCancha, tipoSuperficie, precioHora, estado);
+        }
+    });
+}
 
-      alert("Error de conexión con el servidor.");
+async function enviarNuevaCancha(nombreCancha, tipoSuperficie, precioHora, estado) {
+    try {
+        // 1. Crear la cancha primero
+        const res = await fetch(`${API_URL}/canchas`, {
+            method:  "POST",
+            headers: headersAuth(),
+            body:    JSON.stringify({ nombreCancha, tipoSuperficie, precioHora, estado })
+        });
+
+        const json = await res.json();
+
+        if (!res.ok || !json.success) {
+            mostrarAlerta(json.message || "Error registrando cancha.", "danger", "alertaModalCancha");
+            return;
+        }
+
+        const idCancha = json.data.idCancha;
+
+        // 2. Si hay imagen, subirla al servidor
+        const imagenFile = document.getElementById("imagenCancha")?.files[0];
+        if (imagenFile) {
+            const formData = new FormData();
+            formData.append("imagen", imagenFile);
+
+            await fetch(`${API_URL}/canchas/${idCancha}/imagen`, {
+                method:  "POST",
+                headers: { "Authorization": "Bearer " + getToken() },
+                body:    formData
+            });
+        }
+
+        // 3. Cerrar modal y recargar
+        const modalElement = document.getElementById("modalNuevaCancha");
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
+
+        document.getElementById("formNuevaCancha").reset();
+        const previewContainer = document.getElementById("previewContainer");
+        if (previewContainer) previewContainer.style.display = "none";
+
+        mostrarAlerta("✅ Cancha registrada exitosamente.", "success");
+        cargarGestionCanchas();
+
+    } catch (error) {
+        console.error("Error creando cancha:", error);
+        mostrarAlerta("Error de conexión con el servidor.", "danger", "alertaModalCancha");
     }
-  });
 }
 
 cargarGestionCanchas;

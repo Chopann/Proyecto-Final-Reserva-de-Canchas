@@ -12,4 +12,5 @@ public class CanchaRequest {
     @NotNull @DecimalMin("0.0")
     private BigDecimal precioHora;
     private String estado = "Disponible";
+    private String imagenUrl;
 }

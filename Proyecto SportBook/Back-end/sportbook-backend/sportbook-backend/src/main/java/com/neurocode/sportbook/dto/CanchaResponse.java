@@ -9,5 +9,5 @@ public class CanchaResponse {
     private String tipoSuperficie;
     private BigDecimal precioHora;
     private String estado;
-    private String fotoUrl;
+    private String imagenUrl;
 }

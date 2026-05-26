@@ -25,4 +25,7 @@ public class Cancha {
 
     @Column(name = "estado", length = 20)
     private String estado = "Disponible";
+
+    @Column(name = "imagen_url", columnDefinition = "TEXT")
+    private String imagenUrl;
 }

@@ -50,6 +50,7 @@ public class CanchaService {
                 .tipoSuperficie(request.getTipoSuperficie())
                 .precioHora(request.getPrecioHora())
                 .estado(request.getEstado() != null ? request.getEstado() : "Disponible")
+                .imagenUrl(request.getImagenUrl())
                 .build();
         return toResponse(canchaRepository.save(cancha));
     }
@@ -60,6 +61,9 @@ public class CanchaService {
         cancha.setTipoSuperficie(request.getTipoSuperficie());
         cancha.setPrecioHora(request.getPrecioHora());
         cancha.setEstado(request.getEstado());
+        if (request.getImagenUrl() != null) {
+            cancha.setImagenUrl(request.getImagenUrl());
+        }
         return toResponse(canchaRepository.save(cancha));
     }
 
@@ -88,6 +92,7 @@ public class CanchaService {
                 .tipoSuperficie(c.getTipoSuperficie())
                 .precioHora(c.getPrecioHora())
                 .estado(c.getEstado())
+                .imagenUrl(c.getImagenUrl())
                 .build();
     }
 }

@@ -166,102 +166,89 @@
         </div>
     </section>
 
-    <!-- MODAL NUEVA CANCHA -->
+        <!-- MODAL NUEVA CANCHA -->
     <div class="modal fade" id="modalNuevaCancha" tabindex="-1">
-
-        <div class="modal-dialog">
-
-            <div class="modal-content">
-
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background:#1b263b; color:#f8f9fa; border:1px solid #39ff14;">
                 <form id="formNuevaCancha">
 
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            Registrar Nueva Cancha
+                    <div class="modal-header" style="border-bottom:1px solid #39ff14;">
+                        <h5 class="modal-title" style="color:#39ff14; font-weight:bold;">
+                            &#127967; Registrar Nueva Cancha
                         </h5>
-
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
-                        </button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
 
                     <div class="modal-body">
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Nombre de la cancha
-                            </label>
+                        <div id="alertaModalCancha"></div>
 
-                            <input
-                                type="text"
-                                id="nombreCancha"
-                                class="form-control"
-                                placeholder="Ej: Cancha Norte"
-                                required>
+                        <div class="row g-3">
+
+                            <!-- NOMBRE -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nombre de la cancha <span class="text-danger">*</span></label>
+                                <input type="text" id="nombreCancha" class="form-control"
+                                    placeholder="Ej: Cancha F&#250;tbol #3" required>
+                            </div>
+
+                            <!-- SUPERFICIE -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tipo de superficie <span class="text-danger">*</span></label>
+                                <select id="tipoSuperficie" class="form-select" required>
+                                    <option value="">Seleccione una opci&#243;n</option>
+                                    <option value="Sint&#233;tica">Sint&#233;tica</option>
+                                    <option value="Cemento">Cemento</option>
+                                    <option value="Grass">Grass</option>
+                                </select>
+                            </div>
+
+                            <!-- PRECIO -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Precio por hora (COP) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background:#0d1b2a; color:#39ff14; border-color:#39ff14;">$</span>
+                                    <input type="number" id="precioHora" class="form-control"
+                                        placeholder="Ej: 50000" min="1000" step="1000" required>
+                                </div>
+                            </div>
+
+                            <!-- ESTADO -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Estado inicial</label>
+                                <select id="estadoCancha" class="form-select">
+                                    <option value="Disponible">&#9989; Disponible</option>
+                                    <option value="Mantenimiento">&#128295; Mantenimiento</option>
+                                </select>
+                            </div>
+
+                            <!-- IMAGEN -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">
+                                    Imagen de la cancha
+                                    <span class="text-muted" style="font-size:0.85rem;">(opcional)</span>
+                                </label>
+                                <input type="file" id="imagenCancha" class="form-control" accept="image/*">
+                                <small class="text-muted">Formatos: JPG, PNG, WEBP. Si no subes imagen se usar&#225; una por defecto seg&#250;n el tipo de cancha.</small>
+                            </div>
+
+                            <!-- PREVIEW -->
+                            <div class="col-12 text-center" id="previewContainer" style="display:none;">
+                                <img id="previewImagen" src="" alt="Vista previa"
+                                    style="max-height:180px; border-radius:12px; object-fit:cover; width:100%; border:2px solid #39ff14;">
+                            </div>
+
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Tipo de superficie
-                            </label>
-
-                            <select
-                                id="tipoSuperficie"
-                                class="form-select"
-                                required>
-
-                                <option value="">Seleccione</option>
-                                <option>Sintética</option>
-                                <option>Cemento</option>
-                                <option>Grass</option>
-
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Precio por hora
-                            </label>
-
-                            <input
-                                type="number"
-                                id="precioHora"
-                                class="form-control"
-                                placeholder="Ej: 50000"
-                                required>
-                        </div>
-
                     </div>
 
-                    <div class="modal-footer">
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-
-                            Cancelar
-
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="btn btn-success">
-
-                            Guardar Cancha
-
-                        </button>
-
+                    <div class="modal-footer" style="border-top:1px solid #39ff14;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success fw-bold px-4">&#128190; Guardar Cancha</button>
                     </div>
 
                 </form>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- FOOTER -->
