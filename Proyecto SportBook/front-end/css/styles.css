@@ -405,6 +405,14 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
 }
 
+/* Títulos de sección más visibles */
+h2.mb-4, h2.mb-5 {
+    color: #ffffff !important;
+    border-left: 4px solid var(--verde-neon);
+    padding-left: 12px;
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
+}
+
 /* LABELS DE FORMULARIOS */
 label,
 .form-label {
