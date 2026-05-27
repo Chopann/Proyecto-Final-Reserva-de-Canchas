@@ -163,9 +163,8 @@
     <!-- EXPORTACIÓN -->
     <section class="container-fluid px-4 pb-5">
         <div class="d-flex gap-3">
-            <button class="btn btn-success">Exportar PDF</button>
-            <button class="btn btn-primary">Exportar Excel</button>
-            <button class="btn btn-secondary">Imprimir</button>
+            <button class="btn btn-success" id="btnExportarPDF">Exportar PDF</button>
+            <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
         </div>
     </section>
 
@@ -185,6 +184,8 @@
         <p class="mb-0">© 2026 SportReserve | Reportes y Analítica</p>
     </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/app.js"></script>
 

@@ -1121,18 +1121,91 @@ if (btnGenerarReporte) {
   });
 }
 
-// Exportar (simulado)
-document.addEventListener("click", function (e) {
-  if (e.target.textContent.includes("Exportar PDF")) {
-    alert("Función de exportación PDF disponible en siguiente versión.");
-  }
-  if (e.target.textContent.includes("Exportar Excel")) {
-    alert("Función de exportación Excel disponible en siguiente versión.");
-  }
-  if (e.target.textContent.includes("Imprimir")) {
-    window.print();
-  }
+// Exportar PDF funcional con jsPDF
+document.addEventListener("DOMContentLoaded", () => {
+    const btnPDF = document.getElementById("btnExportarPDF");
+    if (btnPDF) {
+        btnPDF.addEventListener("click", exportarPDF);
+    }
 });
+
+async function exportarPDF() {
+    if (!window.jspdf) {
+        alert("La librería PDF aún no cargó. Intenta de nuevo en unos segundos.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Encabezado
+    doc.setFontSize(18);
+    doc.setTextColor(0, 150, 80);
+    doc.text("SportReserve — Reporte de Facturación", 14, 20);
+
+    doc.setFontSize(11);
+    doc.setTextColor(80, 80, 80);
+    doc.text("NeuroCode Systems S.A.S · " + new Date().toLocaleDateString("es-CO"), 14, 28);
+
+    // Métricas generales
+    const ingresos   = document.getElementById("ingresosTotales")?.textContent  || "-";
+    const reservas   = document.getElementById("reservasTotales")?.textContent  || "-";
+    const pendientes = document.getElementById("pagosPendientes")?.textContent  || "-";
+    const topCancha  = document.getElementById("canchaTopReservada")?.textContent || "-";
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Ingresos Totales: ${ingresos}`,       14, 40);
+    doc.text(`Reservas Totales: ${reservas}`,       14, 48);
+    doc.text(`Pagos Pendientes: ${pendientes}`,     14, 56);
+    doc.text(`Cancha más reservada: ${topCancha}`,  14, 64);
+
+    // Tabla de facturación
+    const filasFacturacion = [];
+    document.querySelectorAll("#tablaFacturacion tr").forEach(tr => {
+        const celdas = [...tr.querySelectorAll("td")].map(td => td.textContent.trim());
+        if (celdas.length) filasFacturacion.push(celdas);
+    });
+
+    if (filasFacturacion.length) {
+        doc.setFontSize(13);
+        doc.setTextColor(0, 150, 80);
+        doc.text("Detalle de Facturación", 14, 74);
+
+        doc.autoTable({
+            head: [["ID", "Usuario", "Cancha", "Fecha", "Monto", "Estado"]],
+            body: filasFacturacion,
+            startY: 80,
+            styles: { fontSize: 9 },
+            headStyles: { fillColor: [0, 150, 80] }
+        });
+    }
+
+    // Tabla rendimiento por cancha
+    const filasRendimiento = [];
+    document.querySelectorAll("#tablaRendimiento tr").forEach(tr => {
+        const celdas = [...tr.querySelectorAll("td")].map(td => td.textContent.trim());
+        if (celdas.length) filasRendimiento.push(celdas);
+    });
+
+    if (filasRendimiento.length) {
+        const finalY = doc.lastAutoTable?.finalY || 140;
+        doc.setFontSize(13);
+        doc.setTextColor(0, 150, 80);
+        doc.text("Rendimiento por Cancha", 14, finalY + 12);
+
+        doc.autoTable({
+            head: [["Cancha", "Reservas", "Ingresos Generados", "Estado"]],
+            body: filasRendimiento,
+            startY: finalY + 18,
+            styles: { fontSize: 9 },
+            headStyles: { fillColor: [0, 150, 80] }
+        });
+    }
+
+    // Guardar PDF
+    doc.save("SportReserve_Reporte_" + new Date().toISOString().slice(0, 10) + ".pdf");
+}
 
 /* ===================================== */
 /* CERRAR SESIÓN                         */
