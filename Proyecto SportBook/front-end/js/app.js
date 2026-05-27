@@ -707,18 +707,30 @@ async function cargarMisReservas(estadoFiltro = null) {
                     <td>$${(r.montoTotal || 0).toLocaleString("es-CO")}</td>
                     <td>${badgePago(r.estadoPago)}</td>
                     <td>
-                        ${
-                          r.estadoPago === "Pendiente"
-                            ? `
-                            <button class="btn btn-sm btn-danger" onclick="cancelarReserva(${r.idReserva})">
-                                Cancelar
-                            </button>`
-                            : `<button class="btn btn-sm btn-secondary" disabled>
-                                ${
-                                  r.estadoPago === "Cancelado"
-                                    ? "Cancelada"
-                                    : "Finalizada"
-                                }
+                        ${r.estadoPago === "Pendiente" ? `
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-xs btn-success btn-sm py-0 px-2"
+                                    onclick="cambiarEstadoReserva(${r.idReserva}, 'Pagado')">
+                                    Pagar
+                                </button>
+                                <button class="btn btn-xs btn-danger btn-sm py-0 px-2"
+                                    onclick="cancelarReserva(${r.idReserva})">
+                                    Cancelar
+                                </button>
+                            </div>`
+                        : r.estadoPago === "Pagado" ? `
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-xs btn-secondary btn-sm py-0 px-2"
+                                    onclick="cambiarEstadoReserva(${r.idReserva}, 'Finalizado')">
+                                    Finalizar
+                                </button>
+                                <button class="btn btn-xs btn-danger btn-sm py-0 px-2"
+                                    onclick="cancelarReserva(${r.idReserva})">
+                                    Cancelar
+                                </button>
+                            </div>`
+                        : `<button class="btn btn-sm btn-secondary py-0 px-2" disabled>
+                                ${r.estadoPago === "Cancelado" ? "Cancelada" : "Finalizada"}
                             </button>`
                         }
                     </td>
@@ -753,6 +765,33 @@ async function cancelarReserva(id) {
   } catch (error) {
     mostrarAlerta("Error de conexión.", "danger");
   }
+}
+
+async function cambiarEstadoReserva(id, nuevoEstado) {
+    const mensajes = {
+        "Pagado":     "¿Confirmar pago de esta reserva?",
+        "Finalizado": "¿Marcar esta reserva como finalizada?"
+    };
+
+    if (!confirm(mensajes[nuevoEstado] || `¿Cambiar estado a ${nuevoEstado}?`)) return;
+
+    try {
+        const res = await fetch(`${API_URL}/reservas/${id}/estado`, {
+            method:  "PATCH",
+            headers: headersAuth(),
+            body:    JSON.stringify({ estadoPago: nuevoEstado })
+        });
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+            mostrarAlerta(`Estado actualizado a: ${nuevoEstado}`, "success");
+            cargarMisReservas();
+        } else {
+            mostrarAlerta(json.message || "Error al actualizar estado.", "danger");
+        }
+    } catch (error) {
+        mostrarAlerta("Error de conexión con el servidor.", "danger");
+    }
 }
 
 // Filtro mis reservas
@@ -1002,7 +1041,12 @@ async function cargarGestionUsuarios() {
                       u.rol === "Administrador" ? "dark" : "success"
                     }">${u.rol}</span></td>
                     <td><span class="badge bg-success">Activo</span></td>
-                    <td><button class="btn btn-sm btn-secondary" disabled>Gestionar</button></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary"
+                            onclick="verReservasDeUsuario(${u.idUsuario}, '${u.nombre}')">
+                            Ver Reservas
+                        </button>
+                    </td>
                 </tr>`
         )
         .join("");
@@ -1013,6 +1057,91 @@ async function cargarGestionUsuarios() {
     console.error("Error cargando usuarios:", error);
     tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger"><strong>Error cargando usuarios:</strong> ${error.message}</td></tr>`;
   }
+}
+
+async function verReservasDeUsuario(idUsuario, nombreUsuario) {
+    // Crear modal dinámico si no existe
+    let modal = document.getElementById("modalReservasUsuario");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.innerHTML = `
+            <div class="modal fade" id="modalReservasUsuario" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" style="background:#1b263b; color:#f8f9fa; border:1px solid #39ff14;">
+                        <div class="modal-header" style="border-bottom:1px solid #39ff14;">
+                            <h5 class="modal-title" style="color:#39ff14; font-weight:bold;">
+                                Reservas de <span id="modalNombreUsuario"></span>
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalContenidoReservas">
+                                <p class="text-center">Cargando...</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="border-top:1px solid #39ff14;">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
+    // Actualizar nombre en el modal
+    document.getElementById("modalNombreUsuario").textContent = nombreUsuario;
+    document.getElementById("modalContenidoReservas").innerHTML = "<p class='text-center'>Cargando...</p>";
+
+    // Abrir modal
+    const bsModal = new bootstrap.Modal(document.getElementById("modalReservasUsuario"));
+    bsModal.show();
+
+    // Cargar reservas del usuario
+    try {
+        const res  = await fetch(`${API_URL}/reservas`, { headers: headersAuth() });
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+            const reservas = json.data.filter(r => r.idUsuario === idUsuario ||
+                r.nombreUsuario === nombreUsuario);
+
+            if (reservas.length === 0) {
+                document.getElementById("modalContenidoReservas").innerHTML =
+                    `<p class="text-center text-muted">Este usuario no tiene reservas registradas.</p>`;
+                return;
+            }
+
+            document.getElementById("modalContenidoReservas").innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Cancha</th>
+                                <th>Fecha</th>
+                                <th>Horario</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${reservas.map(r => `
+                                <tr>
+                                    <td>#${r.idReserva}</td>
+                                    <td>${r.nombreCancha}</td>
+                                    <td>${r.fecha}</td>
+                                    <td>${r.horaInicio} - ${r.horaFin}</td>
+                                    <td>$${(r.montoTotal || 0).toLocaleString("es-CO")}</td>
+                                    <td>${badgePago(r.estadoPago)}</td>
+                                </tr>`).join("")}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+    } catch (error) {
+        document.getElementById("modalContenidoReservas").innerHTML =
+            `<p class="text-center text-danger">Error cargando reservas.</p>`;
+    }
 }
 
 /* ===================================== */
@@ -1229,9 +1358,10 @@ function setText(id, valor) {
 
 function badgePago(estado) {
   const mapa = {
-    Pendiente: `<span class="badge bg-warning text-dark">Pendiente</span>`,
-    Pagado: `<span class="badge bg-success">Pagado</span>`,
-    Cancelado: `<span class="badge bg-danger">Cancelado</span>`,
+    Pendiente:  `<span class="badge bg-warning text-dark">Pendiente</span>`,
+    Pagado:     `<span class="badge bg-success">Pagado</span>`,
+    Cancelado:  `<span class="badge bg-danger">Cancelado</span>`,
+    Finalizado: `<span class="badge bg-info text-dark">Finalizado</span>`,
   };
   return mapa[estado] || `<span class="badge bg-secondary">${estado}</span>`;
 }

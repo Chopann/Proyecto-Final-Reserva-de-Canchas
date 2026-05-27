@@ -7,6 +7,7 @@ import java.time.LocalTime;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReservaResponse {
     private Integer idReserva;
+    private Integer idUsuario;
     private String nombreUsuario;
     private String nombreCancha;
     private LocalDate fecha;

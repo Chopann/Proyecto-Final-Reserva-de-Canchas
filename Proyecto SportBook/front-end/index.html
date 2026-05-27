@@ -13,20 +13,23 @@
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SportReserve</a>
+            <a class="navbar-brand fw-bold" href="index.html">SportReserve</a>
 
             <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto" id="navLinks">
                     <li class="nav-item"><a class="nav-link active" href="index.html">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="canchas.html">Canchas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
-                    <li class="nav-item"><a class="btn btn-warning ms-2" href="registro.html">Registrarse</a></li>
+                    <!-- Links dinámicos según sesión -->
+                    <li class="nav-item" id="navLogin"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
+                    <li class="nav-item" id="navRegistro"><a class="btn btn-warning ms-2" href="registro.html">Registrarse</a></li>
+                    <li class="nav-item d-none" id="navDashboard"><a class="nav-link" href="#" id="linkDashboard">Mi Panel</a></li>
+                    <li class="nav-item d-none" id="navCerrar"><a class="btn btn-warning ms-2" href="#" id="btnCerrarSesion">Cerrar Sesión</a></li>
                 </ul>
             </div>
         </div>
@@ -35,9 +38,11 @@
     <!-- HERO -->
     <header class="hero-section text-white text-center d-flex align-items-center">
         <div class="container">
-            <h1 class="display-4 fw-bold">Reserva tus canchas deportivas en minutos</h1>
-            <p class="lead">Fútbol, tenis, baloncesto y más en un solo lugar.</p>
-            <a href="canchas.html" class="btn btn-lg btn-warning mt-3">Explorar Canchas</a>
+            <h1 class="display-4 fw-bold" style="color: var(--verde-neon); text-shadow: var(--sombra-neon);">
+                Reserva tus canchas deportivas en minutos
+            </h1>
+            <p class="lead" style="color: var(--gris-claro);">Fútbol, tenis, baloncesto y más en un solo lugar.</p>
+            <a href="canchas.html" class="btn btn-lg btn-warning mt-3 fw-bold">Explorar Canchas</a>
         </div>
     </header>
 
@@ -46,38 +51,43 @@
         <div class="row text-center">
             <h2 class="mb-5">¿Por qué elegirnos?</h2>
 
-            <div class="col-md-4">
-                <div class="card shadow border-0 p-4">
-                    <h4>Reserva Fácil</h4>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow border-0 p-4 h-100">
+                    <div style="font-size: 2.5rem;">⚡</div>
+                    <h4 class="mt-2">Reserva Fácil</h4>
                     <p>Consulta disponibilidad en tiempo real y reserva rápidamente.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card shadow border-0 p-4">
-                    <h4>Pagos Seguros</h4>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow border-0 p-4 h-100">
+                    <div style="font-size: 2.5rem;">🔒</div>
+                    <h4 class="mt-2">Pagos Seguros</h4>
                     <p>Controla el estado de tus pagos y reservas fácilmente.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card shadow border-0 p-4">
-                    <h4>Gestión Completa</h4>
-                    <p>Administración de usuarios, canchas y reportes.</p>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow border-0 p-4 h-100">
+                    <div style="font-size: 2.5rem;">📊</div>
+                    <h4 class="mt-2">Gestión Completa</h4>
+                    <p>Administración de usuarios, canchas y reportes en tiempo real.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- TIPOS DE CANCHAS -->
-    <section class="bg-light py-5">
+    <section class="py-5" style="background: var(--azul-secundario);">
         <div class="container">
             <h2 class="text-center mb-5">Nuestras Canchas</h2>
-            <div class="row">
+            <div class="row g-4">
 
                 <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <img src="assets/futbol.jpg" class="card-img-top" alt="Cancha fútbol">
+                    <div class="card shadow h-100">
+                        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=220&fit=crop"
+                             class="card-img-top" alt="Cancha fútbol"
+                             style="height:200px; object-fit:cover;">
                         <div class="card-body">
                             <h5>Fútbol Sintético</h5>
                             <p>Ideal para partidos rápidos y torneos.</p>
@@ -86,8 +96,10 @@
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <img src="assets/tenis.jpg" class="card-img-top" alt="Cancha tenis">
+                    <div class="card shadow h-100">
+                        <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=220&fit=crop"
+                             class="card-img-top" alt="Cancha tenis"
+                             style="height:200px; object-fit:cover;">
                         <div class="card-body">
                             <h5>Tenis</h5>
                             <p>Superficie profesional para entrenamiento.</p>
@@ -96,8 +108,10 @@
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <img src="assets/basket.jpg" class="card-img-top" alt="Cancha baloncesto">
+                    <div class="card shadow h-100">
+                        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=220&fit=crop"
+                             class="card-img-top" alt="Cancha baloncesto"
+                             style="height:200px; object-fit:cover;">
                         <div class="card-body">
                             <h5>Baloncesto</h5>
                             <p>Espacios amplios para práctica competitiva.</p>
@@ -105,6 +119,10 @@
                     </div>
                 </div>
 
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="canchas.html" class="btn btn-success btn-lg fw-bold px-5">Ver Todas las Canchas</a>
             </div>
         </div>
     </section>
@@ -115,5 +133,30 @@
     </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Mostrar opciones del navbar según si hay sesión activa
+    const token  = sessionStorage.getItem("token");
+    const rol    = sessionStorage.getItem("rol");
+    const nombre = sessionStorage.getItem("nombre");
+
+    if (token) {
+        // Hay sesión — ocultar Login/Registro, mostrar Panel/CerrarSesión
+        document.getElementById("navLogin").classList.add("d-none");
+        document.getElementById("navRegistro").classList.add("d-none");
+        document.getElementById("navDashboard").classList.remove("d-none");
+        document.getElementById("navCerrar").classList.remove("d-none");
+
+        const linkDashboard = document.getElementById("linkDashboard");
+        linkDashboard.textContent = "Mi Panel";
+        linkDashboard.href = rol === "Administrador" ? "dashboard-admin.html" : "dashboard-user.html";
+
+        document.getElementById("btnCerrarSesion").addEventListener("click", function(e) {
+            e.preventDefault();
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        });
+    }
+</script>
+
 </body>
 </html>

@@ -148,6 +148,7 @@ public class ReservaService {
     private ReservaResponse toResponse(Reserva r) {
         return ReservaResponse.builder()
                 .idReserva(r.getIdReserva())
+                .idUsuario(r.getUsuario().getIdUsuario())
                 .nombreUsuario(r.getUsuario().getNombre())
                 .nombreCancha(r.getCancha().getNombreCancha())
                 .fecha(r.getFecha())
