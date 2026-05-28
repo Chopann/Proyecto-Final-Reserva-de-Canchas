@@ -58,4 +58,17 @@ public class ReservaController {
         reservaService.cancelar(id);
         return ResponseEntity.ok(ApiResponse.ok("Reserva cancelada exitosamente"));
     }
+
+    /** PATCH /api/reservas/{id}/estado — cambia estado de pago */
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<ApiResponse<Void>> cambiarEstado(
+            @PathVariable Integer id,
+            @RequestBody java.util.Map<String, String> body) {
+        String nuevoEstado = body.get("estadoPago");
+        if (nuevoEstado == null || nuevoEstado.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("El campo 'estadoPago' es requerido."));
+        }
+        reservaService.cambiarEstadoPago(id, nuevoEstado);
+        return ResponseEntity.ok(ApiResponse.ok("Estado actualizado a: " + nuevoEstado));
+    }
 }

@@ -132,6 +132,13 @@ public class ReservaService {
         reservaRepository.save(reserva);
     }
 
+    /** Cambia el estado de pago de una reserva */
+    public void cambiarEstadoPago(Integer id, String nuevoEstado) {
+        Reserva reserva = buscarOError(id);
+        reserva.setEstadoPago(nuevoEstado);
+        reservaRepository.save(reserva);
+    }
+
     // ── helpers ────────────────────────────────────────────────────────────────
 
     private Reserva buscarOError(Integer id) {

@@ -385,6 +385,33 @@ async function cargarResumenAdmin() {
   }
 }
 
+async function cambiarEstadoReservaAdmin(id, nuevoEstado) {
+    const mensajes = {
+        "Pagado":     "¿Confirmar pago de esta reserva?",
+        "Finalizado": "¿Marcar esta reserva como finalizada?",
+        "Cancelado":  "¿Cancelar esta reserva?"
+    };
+    if (!confirm(mensajes[nuevoEstado] || `¿Cambiar estado a ${nuevoEstado}?`)) return;
+
+    try {
+        const res = await fetch(`${API_URL}/reservas/${id}/estado`, {
+            method:  "PATCH",
+            headers: headersAuth(),
+            body:    JSON.stringify({ estadoPago: nuevoEstado })
+        });
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+            mostrarAlerta(`Estado actualizado a: ${nuevoEstado}`, "success");
+            cargarReportes();
+        } else {
+            mostrarAlerta(json.message || "Error al actualizar estado.", "danger");
+        }
+    } catch (error) {
+        mostrarAlerta("Error de conexión con el servidor.", "danger");
+    }
+}
+
 /* ===================================== */
 /* CANCHAS — Vista pública               */
 /* ===================================== */
@@ -708,29 +735,14 @@ async function cargarMisReservas(estadoFiltro = null) {
                     <td>${badgePago(r.estadoPago)}</td>
                     <td>
                         ${r.estadoPago === "Pendiente" ? `
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-xs btn-success btn-sm py-0 px-2"
-                                    onclick="cambiarEstadoReserva(${r.idReserva}, 'Pagado')">
-                                    Pagar
-                                </button>
-                                <button class="btn btn-xs btn-danger btn-sm py-0 px-2"
-                                    onclick="cancelarReserva(${r.idReserva})">
-                                    Cancelar
-                                </button>
-                            </div>`
-                        : r.estadoPago === "Pagado" ? `
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-xs btn-secondary btn-sm py-0 px-2"
-                                    onclick="cambiarEstadoReserva(${r.idReserva}, 'Finalizado')">
-                                    Finalizar
-                                </button>
-                                <button class="btn btn-xs btn-danger btn-sm py-0 px-2"
-                                    onclick="cancelarReserva(${r.idReserva})">
-                                    Cancelar
-                                </button>
-                            </div>`
+                            <button class="btn btn-sm btn-danger py-0 px-2"
+                                onclick="cancelarReserva(${r.idReserva})">
+                                Cancelar
+                            </button>`
                         : `<button class="btn btn-sm btn-secondary py-0 px-2" disabled>
-                                ${r.estadoPago === "Cancelado" ? "Cancelada" : "Finalizada"}
+                                ${r.estadoPago === "Cancelado" ? "Cancelada"
+                                : r.estadoPago === "Finalizado" ? "Finalizada"
+                                : "Pagada"}
                             </button>`
                         }
                     </td>
@@ -1196,6 +1208,36 @@ async function cargarReportes(estadoPago = null) {
                         <td>${r.fecha}</td>
                         <td>$${(r.montoTotal || 0).toLocaleString("es-CO")}</td>
                         <td>${badgePago(r.estadoPago)}</td>
+                        <td>
+                            ${r.estadoPago === "Pendiente" ? `
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-success py-0 px-2"
+                                        onclick="cambiarEstadoReservaAdmin(${r.idReserva}, 'Pagado')">
+                                        Pagar
+                                    </button>
+                                    <button class="btn btn-sm btn-danger py-0 px-2"
+                                        onclick="cambiarEstadoReservaAdmin(${r.idReserva}, 'Cancelado')">
+                                        Cancelar
+                                    </button>
+                                </div>`
+                            : r.estadoPago === "Pagado" ? `
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-info py-0 px-2"
+                                        onclick="cambiarEstadoReservaAdmin(${r.idReserva}, 'Finalizado')">
+                                        Finalizar
+                                    </button>
+                                    <button class="btn btn-sm btn-danger py-0 px-2"
+                                        onclick="cambiarEstadoReservaAdmin(${r.idReserva}, 'Cancelado')">
+                                        Cancelar
+                                    </button>
+                                </div>`
+                            : `<button class="btn btn-sm btn-secondary py-0 px-2" disabled>
+                                    ${r.estadoPago === "Cancelado" ? "Cancelada"
+                                    : r.estadoPago === "Finalizado" ? "Finalizada"
+                                    : "Pagada"}
+                                </button>`
+                            }
+                        </td>
                     </tr>`
           )
           .join("");
