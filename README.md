@@ -15,12 +15,12 @@
 ## ✅ Requisitos previos
 Instalar los siguientes programas antes de correr el proyecto:
 
-| Programa | Versión | Descarga |
-|----------|---------|----------|
-| Java | 17 | https://adoptium.net |
-| Maven | 3.9+ | https://maven.apache.org/download.cgi |
-| PostgreSQL | 18 | https://www.postgresql.org/download |
-| VS Code | Última | https://code.visualstudio.com |
+| Programa   | Versión | Descarga                              |
+|------------|---------|---------------------------------------|
+| Java       | 17      | https://adoptium.net                  |
+| Maven      | 3.9+    | https://maven.apache.org/download.cgi |
+| PostgreSQL | 18      | https://www.postgresql.org/download   |
+| VS Code    | Última  | https://code.visualstudio.com         |
 
 **Extensiones de VS Code necesarias:**
 - Extension Pack for Java (Microsoft)
@@ -51,7 +51,7 @@ sportbook-backend/src/main/resources/application.properties
 ```
 Cambiar la línea:
 ```properties
-spring.datasource.password=TU_PASSWORD_AQUI
+spring.datasource.password=Tu_Contraseña_aqui
 ```
 Por tu contraseña real de PostgreSQL.
 
@@ -76,12 +76,12 @@ O usar la extensión **Live Server** de VS Code.
 ---
 
 ## 👥 Usuarios de prueba
-| Correo | Contraseña | Rol |
-|--------|-----------|-----|
-| admin@sportbook.com | password | Administrador |
-| ana@sportbook.com | password | Cliente |
-| juan@sportbook.com | password | Cliente |
-| laura@sportbook.com | password | Cliente |
+| Correo              | Contraseña | Rol           |
+|---------------------|------------|---------------|
+| admin@sportbook.com | password   | Administrador |
+| ana@sportbook.com   | password   | Cliente       |
+| juan@sportbook.com  | password   | Cliente       |
+| laura@sportbook.com | password   | Cliente       |
 
 ---
 
@@ -91,14 +91,14 @@ Una vez corriendo el backend, ver documentación completa en:
 http://localhost:8080/swagger-ui.html
 ```
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | /api/auth/login | Iniciar sesión |
-| POST | /api/auth/registro | Registrar usuario |
-| GET | /api/canchas | Listar canchas |
-| POST | /api/reservas | Crear reserva |
-| GET | /api/reservas/mis-reservas | Ver mis reservas |
-| GET | /api/reportes/resumen | Resumen admin |
+| Método | Endpoint                   | Descripción       |
+|--------|----------------------------|-------------------|
+| POST   | /api/auth/login            | Iniciar sesión    |
+| POST   | /api/auth/registro         | Registrar usuario |
+| GET    | /api/canchas               | Listar canchas    |
+| POST   | /api/reservas              | Crear reserva     |
+| GET    | /api/reservas/mis-reservas | Ver mis reservas  |
+| GET    | /api/reportes/resumen      | Resumen admin     |
 
 ---
 
