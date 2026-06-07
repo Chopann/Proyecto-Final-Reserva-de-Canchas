@@ -56,6 +56,8 @@ spring.datasource.password=Tu_Contraseña_aqui
 Por tu contraseña real de PostgreSQL.
 
 ### 4. correr el frontend
+Cuando abres un HTML haciendo doble clic, el navegador lo carga con el protocolo file://. Esto activa restricciones de seguridad del navegador que bloquean peticiones HTTP, incluyendo localhost:8080 donde corre el backend. Ese error se le conoce como CORS.
+
 Abrir una terminal en la carpeta `sportbook-frontend` y ejecutar:
 "python -m http.server 5500"
 
