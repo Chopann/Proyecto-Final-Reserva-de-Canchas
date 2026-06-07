@@ -526,16 +526,39 @@ async function eliminarCancha(id, nombre) {
     }
 }
 
-// Botón filtrar canchas
+// Botón filtrar canchas (funciona en vista pública y en la gestión admin)
 const btnFiltrarCanchas = document.getElementById("btnFiltrarCanchas");
 if (btnFiltrarCanchas) {
   btnFiltrarCanchas.addEventListener("click", () => {
     const estado = document.getElementById("filtroEstado")?.value;
     const superficie = document.getElementById("filtroSuperficie")?.value;
-    cargarCanchas(
-      estado === "Todos" ? null : estado,
-      superficie === "Todas" ? null : superficie
-    );
+    const nombre = document.getElementById("filtroNombreCancha")?.value;
+
+    // Si estamos en la vista de gestión (tabla admin) usamos cargarGestionCanchas
+    if (document.getElementById("tablaGestionCanchas")) {
+      cargarGestionCanchas(
+        nombre || null,
+        superficie === "Todas" ? null : superficie,
+        estado === "Todos" ? null : estado
+      );
+    } else {
+      // Vista pública: cargar tarjetas
+      cargarCanchas(
+        estado === "Todos" ? null : estado,
+        superficie === "Todas" ? null : superficie
+      );
+    }
+  });
+}
+
+// Botón filtrar usuarios (gestión admin)
+const btnFiltrarUsuarios = document.getElementById("btnFiltrarUsuarios");
+if (btnFiltrarUsuarios) {
+  btnFiltrarUsuarios.addEventListener("click", () => {
+    const nombre = document.getElementById("filtroNombreUsuario")?.value;
+    const correo = document.getElementById("filtroCorreoUsuario")?.value;
+    const rol = document.getElementById("filtroRolUsuario")?.value;
+    cargarGestionUsuarios(nombre || null, correo || null, rol || null);
   });
 }
 
@@ -686,7 +709,7 @@ if (document.getElementById("tablaMisReservas")) {
   cargarMisReservas();
 }
 
-async function cargarMisReservas(estadoFiltro = null) {
+async function cargarMisReservas(estadoFiltro = null, fechaFiltro = null) {
   const tbody = document.getElementById("tablaMisReservas");
   if (!tbody) return;
 
@@ -701,6 +724,11 @@ async function cargarMisReservas(estadoFiltro = null) {
 
       if (estadoFiltro && estadoFiltro !== "Todos") {
         reservas = reservas.filter((r) => r.estadoPago === estadoFiltro);
+      }
+
+      if (fechaFiltro) {
+        // Filtrar por fecha exacta (formato esperado: YYYY-MM-DD)
+        reservas = reservas.filter((r) => r.fecha === fechaFiltro);
       }
 
       // Actualizar resumen
@@ -811,7 +839,8 @@ const btnFiltrarReservas = document.getElementById("btnFiltrarReservas");
 if (btnFiltrarReservas) {
   btnFiltrarReservas.addEventListener("click", () => {
     const estado = document.getElementById("filtroEstadoPago")?.value;
-    cargarMisReservas(estado);
+    const fecha = document.getElementById("filtroFecha")?.value;
+    cargarMisReservas(estado, fecha || null);
   });
 }
 
@@ -825,7 +854,7 @@ if (document.getElementById("tablaGestionCanchas")) {
   cargarGestionCanchas();
 }
 
-async function cargarGestionCanchas() {
+async function cargarGestionCanchas(nombreFiltro = null, superficieFiltro = null, estadoFiltro = null) {
   const tbody = document.getElementById("tablaGestionCanchas");
 
   if (!tbody) return;
@@ -842,6 +871,20 @@ async function cargarGestionCanchas() {
 
       console.log("Canchas:", canchas);
 
+      // Aplicar filtros en cliente si vienen
+      let resultados = canchas;
+      if (nombreFiltro) {
+        resultados = resultados.filter((c) =>
+          (c.nombreCancha || "").toLowerCase().includes((nombreFiltro || "").toLowerCase())
+        );
+      }
+      if (superficieFiltro && superficieFiltro !== "Todas") {
+        resultados = resultados.filter((c) => c.tipoSuperficie === superficieFiltro);
+      }
+      if (estadoFiltro && estadoFiltro !== "Todos") {
+        resultados = resultados.filter((c) => c.estado === estadoFiltro);
+      }
+
       // =========================
       // MÉTRICAS
       // =========================
@@ -850,22 +893,19 @@ async function cargarGestionCanchas() {
 
       setText(
         "canchasDisp",
-        canchas.filter((c) => c.estado?.trim().toLowerCase() === "disponible")
-          .length
+        resultados.filter((c) => c.estado?.trim().toLowerCase() === "disponible").length
       );
 
       setText(
         "canchasMant",
-        canchas.filter(
-          (c) => c.estado?.trim().toLowerCase() === "mantenimiento"
-        ).length
+        resultados.filter((c) => c.estado?.trim().toLowerCase() === "mantenimiento").length
       );
 
       // =========================
       // TABLA
       // =========================
 
-      if (canchas.length === 0) {
+      if (resultados.length === 0) {
         tbody.innerHTML = `
                     <tr>
                         <td colspan="7" class="text-center">
@@ -877,7 +917,7 @@ async function cargarGestionCanchas() {
         return;
       }
 
-      tbody.innerHTML = canchas
+      tbody.innerHTML = resultados
         .map((c) => {
           const estadoNormalizado = c.estado?.trim().toLowerCase();
 
@@ -1031,7 +1071,7 @@ if (document.getElementById("tablaGestionUsuarios")) {
   cargarGestionUsuarios();
 }
 
-async function cargarGestionUsuarios() {
+async function cargarGestionUsuarios(nombre = null, correo = null, rol = null) {
   const tbody = document.getElementById("tablaGestionUsuarios");
   if (!tbody) return;
 
@@ -1041,7 +1081,23 @@ async function cargarGestionUsuarios() {
 
     if (res.ok && json.success) {
       const usuarios = json.data;
-      tbody.innerHTML = usuarios
+
+      let resultados = usuarios;
+      if (nombre) {
+        resultados = resultados.filter((u) =>
+          (u.nombre || "").toLowerCase().includes((nombre || "").toLowerCase())
+        );
+      }
+      if (correo) {
+        resultados = resultados.filter((u) =>
+          (u.correo || "").toLowerCase().includes((correo || "").toLowerCase())
+        );
+      }
+      if (rol && rol !== "Todos") {
+        resultados = resultados.filter((u) => u.rol === rol);
+      }
+
+      tbody.innerHTML = resultados
         .map(
           (u) => `
                 <tr>
@@ -1283,14 +1339,8 @@ async function cargarReportes(estadoPago = null) {
   }
 }
 
-// Filtro reportes
-const btnGenerarReporte = document.getElementById("btnGenerarReporte");
-if (btnGenerarReporte) {
-  btnGenerarReporte.addEventListener("click", () => {
-    const estado = document.getElementById("filtroEstadoPagoReporte")?.value;
-    cargarReportes(estado);
-  });
-}
+// Los filtros de reportes fueron eliminados de la vista; la función
+// `cargarReportes()` muestra todos los datos sin filtrado manual.
 
 // Exportar PDF funcional con jsPDF
 document.addEventListener("DOMContentLoaded", () => {
