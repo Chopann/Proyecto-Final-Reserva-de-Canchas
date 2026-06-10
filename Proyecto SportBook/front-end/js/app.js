@@ -187,6 +187,29 @@ if (loginForm) {
 
 const registroForm = document.getElementById("registroForm");
 
+// Bloquear letras en el campo teléfono mientras se escribe
+const telefonoInput = document.getElementById("telefono");
+if (telefonoInput) {
+  telefonoInput.addEventListener("keypress", function (e) {
+    if (!/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+  telefonoInput.addEventListener("input", function () {
+    this.value = this.value.replace(/[^0-9]/g, "");
+    if (this.value.length > 0 && this.value.length < 7) {
+      this.classList.add("is-invalid");
+    } else {
+      this.classList.remove("is-invalid");
+    }
+  });
+  telefonoInput.addEventListener("paste", function (e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData("text");
+    this.value = pasted.replace(/[^0-9]/g, "").slice(0, 15);
+  });
+}
+
 if (registroForm) {
   registroForm.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -203,6 +226,12 @@ if (registroForm) {
         "Todos los campos obligatorios deben completarse.",
         "danger"
       );
+      return;
+    }
+
+    if (telefono && !/^[0-9]{7,15}$/.test(telefono)) {
+      mostrarAlerta("El teléfono debe contener solo números (7 a 15 dígitos).", "danger");
+      document.getElementById("telefono").classList.add("is-invalid");
       return;
     }
 

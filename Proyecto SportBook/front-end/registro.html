@@ -44,7 +44,13 @@
                 <!-- TELÉFONO -->
                 <div class="mb-3">
                     <label class="form-label">Teléfono</label>
-                    <input type="tel" class="form-control" id="telefono" placeholder="Número de contacto">
+                    <input type="tel" class="form-control" id="telefono"
+                           placeholder="Número de contacto"
+                           inputmode="numeric"
+                           pattern="[0-9]{7,15}"
+                           maxlength="15"
+                           title="Solo se permiten números (7 a 15 dígitos)">
+                    <div class="invalid-feedback">Ingresa solo números (7 a 15 dígitos).</div>
                 </div>
 
                 <!-- CONTRASEÑA -->
