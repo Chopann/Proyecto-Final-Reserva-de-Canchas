@@ -5,7 +5,7 @@
 
 ## 🛠️ Tecnologías utilizadas
 - **Frontend:** HTML, CSS, JavaScript, Bootstrap 5
-- **Backend:** Java 17 + Spring Boot 3.2 + REST API
+- **Backend:** Java 25 + Spring Boot 4.1 + REST API
 - **Base de datos:** PostgreSQL 18
 - **Seguridad:** JWT
 - **Documentación API:** Swagger / OpenAPI
@@ -17,7 +17,7 @@ Instalar los siguientes programas antes de correr el proyecto:
 
 | Programa   | Versión | Descarga                              |
 |------------|---------|---------------------------------------|
-| Java       | 17      | https://adoptium.net                  |
+| Java       | 25      | https://adoptium.net                  |
 | Maven      | 3.9+    | https://maven.apache.org/download.cgi |
 | PostgreSQL | 18      | https://www.postgresql.org/download   |
 | VS Code    | Última  | https://code.visualstudio.com         |
@@ -58,8 +58,11 @@ Por tu contraseña real de PostgreSQL.
 ### 4. correr el frontend
 Cuando abres un HTML haciendo doble clic, el navegador lo carga con el protocolo file://. Esto activa restricciones de seguridad del navegador que bloquean peticiones HTTP, incluyendo localhost:8080 donde corre el backend. Ese error se le conoce como CORS.
 
-Abrir una terminal en la carpeta `sportbook-frontend` y ejecutar:
-"python -m http.server 5500"
+Desde la raíz del repositorio, abrir una terminal en `Proyecto SportBook\front-end`
+y ejecutar:
+```powershell
+python -m http.server 5500
+```
 
 ### 5. Correr el backend
 Abrir otra terminal en la carpeta `sportbook-backend` y ejecutar:

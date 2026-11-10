@@ -4,7 +4,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor
 public class ReservaRequest {
     @NotNull
     private Integer idCancha;

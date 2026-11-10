@@ -24,6 +24,7 @@ public class Cancha {
     private BigDecimal precioHora;
 
     @Column(name = "estado", length = 20)
+    @Builder.Default
     private String estado = "Disponible";
 
     @Column(name = "imagen_url", columnDefinition = "TEXT")

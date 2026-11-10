@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for the SportBook Java 25 runtime upgrade plan.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-java-25-runtime",
+      "description": "Upgrade the SportBook backend runtime to Java 25 and apply only the framework compatibility changes required to build and test on that runtime.",
+      "reason": "The assessment identifies Java 17 in the Maven project; the requested target is Java 25.",
+      "requirements": "Address assessment issue azure-java-version-02000 at pom.xml:21. Set Maven java.version to 25 and synchronize any explicit maven.compiler.source, maven.compiler.target, or maven.compiler.release settings after checking the effective configuration. The current Spring Boot 3.2.5 baseline is below the Java 25 compatible framework line; upgrade Spring Boot/Spring Framework and only the dependent libraries, plugins, or source APIs strictly required for Java 25 compatibility. Preserve application, API, and business behavior. Update the repository root README.md Java/framework version references and update CI Java setup only if a workflow exists. Run a focused Java 25 Maven build and existing unit tests (mvn -B clean verify); do not launch the application.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "java-25-runtime-upgrade",
+    "projectName": "SportBook",
+    "language": "java",
+    "createdAt": "2026-11-10T14:53:46-05:00",
+    "version": "1.0"
+  }
+}

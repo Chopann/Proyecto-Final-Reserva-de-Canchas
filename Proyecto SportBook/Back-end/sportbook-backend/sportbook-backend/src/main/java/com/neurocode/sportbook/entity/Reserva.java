@@ -37,5 +37,6 @@ public class Reserva {
     private BigDecimal montoTotal;
 
     @Column(name = "estado_pago", length = 20)
+    @Builder.Default
     private String estadoPago = "Pendiente";
 }
