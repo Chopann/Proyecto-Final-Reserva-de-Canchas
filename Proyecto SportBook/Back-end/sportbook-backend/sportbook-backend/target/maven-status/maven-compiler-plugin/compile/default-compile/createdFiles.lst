@@ -36,5 +36,6 @@ com\neurocode\sportbook\dto\CanchaRequest.class
 com\neurocode\sportbook\controller\ReservaController.class
 com\neurocode\sportbook\entity\Cancha$CanchaBuilder.class
 com\neurocode\sportbook\entity\Reserva.class
+com\neurocode\sportbook\config\WebConfig.class
 com\neurocode\sportbook\service\CanchaService.class
 com\neurocode\sportbook\dto\LoginResponse$LoginResponseBuilder.class

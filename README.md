@@ -65,14 +65,22 @@ python -m http.server 5500
 ```
 
 ### 5. Correr el backend
-Abrir otra terminal en la carpeta `sportbook-backend` y ejecutar:
-```bash
+Abrir otra terminal de PowerShell y configurar Java 25 para esa sesión:
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-25.0.5.8-hotspot"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+mvn -version
+```
+Verificar que Maven indique Java 25. Luego ir a la carpeta del backend y arrancarlo:
+```powershell
+Set-Location "Proyecto SportBook\Back-end\sportbook-backend\sportbook-backend"
 mvn spring-boot:run
 ```
 Esperar hasta ver:
 ```
 Started SportBookApplication in X seconds
 ```
+Mantener esta terminal abierta mientras se usa la aplicación. La configuración de Java solo dura en esa terminal; si se abre otra, repetir los dos comandos de `$env:` antes de iniciar Maven.
 
 ### 6. Abrir el frontend
 Abrir el archivo `http://localhost:5500/login.html` en el navegador.
